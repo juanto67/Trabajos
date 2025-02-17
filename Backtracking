@@ -2,104 +2,138 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class BacktrackingRecursive {
-    
+
+    // Método backtrack: Implementa el algoritmo de backtracking recursivo.
+    // Explora todas las posibles combinaciones de los candidatos para encontrar soluciones válidas.
     public static void backtrack(List<Integer> solution, List<Integer> candidates) {
-        if (isSolution(solution)) {  // Caso base: si la solución es válida
-            processSolution(solution);
-            return;
+
+        // Caso base: Si la solución tiene el tamaño deseado (en este caso 3 elementos)
+        // Llamamos a processSolution para mostrar o guardar la solución.
+        if (isSolution(solution)) {
+            processSolution(solution);  // Procesamos la solución válida (en este caso, la imprimimos)
+            return;  // Terminamos la recursión para esta rama de la búsqueda
         }
 
-        for (int candidate : candidates) { // Intentamos cada opción posible
-            if (isValid(candidate, solution)) { // Si es válida, continuamos
-                solution.add(candidate);  // Hacer el movimiento
-                backtrack(solution, getNewCandidates(solution));  // Llamada recursiva
-                solution.remove(solution.size() - 1); // Deshacer el movimiento (backtrack)
+        // Exploramos todos los posibles candidatos para la siguiente posición
+        for (int candidate : candidates) {
+
+            // Si el candidato es válido para la solución parcial
+            if (isValid(candidate, solution)) {
+
+                // Tomamos la decisión de agregar el candidato a la solución
+                solution.add(candidate);
+                
+                // Hacemos la llamada recursiva para continuar explorando la siguiente parte de la solución
+                backtrack(solution, getNewCandidates(solution));
+
+                // Realizamos el retroceso: eliminamos la última decisión tomada
+                solution.remove(solution.size() - 1);
             }
         }
     }
 
-    // Función auxiliar para verificar si la solución es válida
+    // Método isSolution: Verifica si la solución parcial tiene el tamaño deseado.
+    // En este caso, comprobamos si tiene 3 elementos.
     private static boolean isSolution(List<Integer> solution) {
-        return solution.size() == 3; // Ejemplo: buscamos una solución de tamaño 3
+        return solution.size() == 3;  // Buscamos combinaciones de 3 elementos
     }
 
-    // Función para procesar la solución encontrada
+    // Método processSolution: Procesa la solución cuando se alcanza un tamaño válido.
+    // En este caso, solo la imprime.
     private static void processSolution(List<Integer> solution) {
-        System.out.println(solution);
+        System.out.println(solution);  // Imprime la solución encontrada
     }
 
-    // Verifica si un candidato es válido para la solución
+    // Método isValid: Verifica si el candidato puede añadirse a la solución sin violar restricciones.
+    // En este caso, comprobamos si el candidato no está ya en la solución.
     private static boolean isValid(int candidate, List<Integer> solution) {
-        return !solution.contains(candidate); // Evita duplicados
+        return !solution.contains(candidate);  // Asegura que no haya duplicados
     }
 
-    // Genera nuevos candidatos (en este caso, números del 1 al 5)
+    // Método getNewCandidates: Genera nuevos candidatos posibles basados en la solución parcial.
+    // En este caso, devolvemos los números del 1 al 5 que no estén ya en la solución.
     private static List<Integer> getNewCandidates(List<Integer> solution) {
         List<Integer> candidates = new ArrayList<>();
-        for (int i = 1; i <= 5; i++) {
-            if (!solution.contains(i)) {
+        for (int i = 1; i <= 5; i++) {  // Conjunto de candidatos posibles
+            if (!solution.contains(i)) {  // Solo candidatos no repetidos
                 candidates.add(i);
             }
         }
-        return candidates;
+        return candidates;  // Devolvemos los nuevos candidatos disponibles
     }
 
+    // Método principal: Comienza el proceso de backtracking.
     public static void main(String[] args) {
-        List<Integer> solution = new ArrayList<>();
-        List<Integer> candidates = List.of(1, 2, 3, 4, 5); // Conjunto inicial de candidatos
-        backtrack(solution, candidates);
+        List<Integer> solution = new ArrayList<>();  // Comenzamos con una solución vacía
+        List<Integer> candidates = List.of(1, 2, 3, 4, 5);  // Candidatos iniciales
+        backtrack(solution, candidates);  // Llamada inicial al algoritmo de backtracking
     }
 }
+
 import java.util.*;
 
 public class BacktrackingIterative {
-    
+
+    // Método backtrackIterative: Implementa el algoritmo de backtracking de manera iterativa usando una pila.
+    // Utiliza una pila para almacenar las soluciones parciales y explora las combinaciones de manera iterativa.
     public static void backtrackIterative(List<Integer> candidates) {
+        
+        // Creamos una pila para almacenar las soluciones parciales (listas de números)
         Stack<List<Integer>> stack = new Stack<>();
-        stack.push(new ArrayList<>()); // Inicializamos con una solución vacía
+        stack.push(new ArrayList<>());  // Comenzamos con una solución vacía en la pila
 
+        // Mientras haya soluciones parciales en la pila
         while (!stack.isEmpty()) {
-            List<Integer> solution = stack.pop();
+            List<Integer> solution = stack.pop();  // Sacamos la última solución añadida
 
-            if (isSolution(solution)) { // Si encontramos una solución válida, la imprimimos
-                processSolution(solution);
-                continue;
+            // Caso base: Si la solución tiene el tamaño deseado (3 elementos), la procesamos
+            if (isSolution(solution)) {
+                processSolution(solution);  // Procesamos la solución (en este caso, la imprimimos)
+                continue;  // Continuamos con la siguiente solución en la pila
             }
 
-            for (int candidate : getNewCandidates(solution, candidates)) { // Generamos nuevos candidatos
+            // Generamos los nuevos candidatos para la siguiente posición
+            for (int candidate : getNewCandidates(solution, candidates)) {
+
+                // Si el candidato es válido (no se repite en la solución parcial)
                 if (isValid(candidate, solution)) {
-                    List<Integer> newSolution = new ArrayList<>(solution);
-                    newSolution.add(candidate);
-                    stack.push(newSolution); // Guardamos la nueva solución en la pila
+                    List<Integer> newSolution = new ArrayList<>(solution);  // Copiamos la solución actual
+                    newSolution.add(candidate);  // Añadimos el candidato a la nueva solución
+                    stack.push(newSolution);  // Añadimos la nueva solución a la pila para exploración futura
                 }
             }
         }
     }
 
+    // Método isSolution: Verifica si la solución tiene el tamaño deseado (3 elementos)
     private static boolean isSolution(List<Integer> solution) {
-        return solution.size() == 3; // Ejemplo: buscamos una solución de tamaño 3
+        return solution.size() == 3;  // Buscamos combinaciones de 3 elementos
     }
 
+    // Método processSolution: Procesa la solución encontrada (en este caso, la imprime)
     private static void processSolution(List<Integer> solution) {
         System.out.println(solution);
     }
 
+    // Método isValid: Verifica si un candidato es válido para la solución parcial (sin duplicados)
     private static boolean isValid(int candidate, List<Integer> solution) {
-        return !solution.contains(candidate); // Evita duplicados
+        return !solution.contains(candidate);  // Asegura que no haya duplicados
     }
 
+    // Método getNewCandidates: Genera nuevos candidatos posibles basados en la solución parcial
     private static List<Integer> getNewCandidates(List<Integer> solution, List<Integer> candidates) {
         List<Integer> newCandidates = new ArrayList<>();
         for (int candidate : candidates) {
-            if (!solution.contains(candidate)) {
+            if (!solution.contains(candidate)) {  // Aseguramos que no se repitan
                 newCandidates.add(candidate);
             }
         }
-        return newCandidates;
+        return newCandidates;  // Devolvemos los nuevos candidatos disponibles
     }
 
+    // Método principal: Comienza el proceso de backtracking iterativo
     public static void main(String[] args) {
-        List<Integer> candidates = List.of(1, 2, 3, 4, 5); // Candidatos iniciales
-        backtrackIterative(candidates);
+        List<Integer> candidates = List.of(1, 2, 3, 4, 5);  // Conjunto de candidatos iniciales
+        backtrackIterative(candidates);  // Llamada inicial al algoritmo de backtracking iterativo
     }
 }
