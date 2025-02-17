@@ -1,0 +1,105 @@
+import java.util.List;
+import java.util.ArrayList;
+
+public class BacktrackingRecursive {
+    
+    public static void backtrack(List<Integer> solution, List<Integer> candidates) {
+        if (isSolution(solution)) {  // Caso base: si la solución es válida
+            processSolution(solution);
+            return;
+        }
+
+        for (int candidate : candidates) { // Intentamos cada opción posible
+            if (isValid(candidate, solution)) { // Si es válida, continuamos
+                solution.add(candidate);  // Hacer el movimiento
+                backtrack(solution, getNewCandidates(solution));  // Llamada recursiva
+                solution.remove(solution.size() - 1); // Deshacer el movimiento (backtrack)
+            }
+        }
+    }
+
+    // Función auxiliar para verificar si la solución es válida
+    private static boolean isSolution(List<Integer> solution) {
+        return solution.size() == 3; // Ejemplo: buscamos una solución de tamaño 3
+    }
+
+    // Función para procesar la solución encontrada
+    private static void processSolution(List<Integer> solution) {
+        System.out.println(solution);
+    }
+
+    // Verifica si un candidato es válido para la solución
+    private static boolean isValid(int candidate, List<Integer> solution) {
+        return !solution.contains(candidate); // Evita duplicados
+    }
+
+    // Genera nuevos candidatos (en este caso, números del 1 al 5)
+    private static List<Integer> getNewCandidates(List<Integer> solution) {
+        List<Integer> candidates = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            if (!solution.contains(i)) {
+                candidates.add(i);
+            }
+        }
+        return candidates;
+    }
+
+    public static void main(String[] args) {
+        List<Integer> solution = new ArrayList<>();
+        List<Integer> candidates = List.of(1, 2, 3, 4, 5); // Conjunto inicial de candidatos
+        backtrack(solution, candidates);
+    }
+}
+import java.util.*;
+
+public class BacktrackingIterative {
+    
+    public static void backtrackIterative(List<Integer> candidates) {
+        Stack<List<Integer>> stack = new Stack<>();
+        stack.push(new ArrayList<>()); // Inicializamos con una solución vacía
+
+        while (!stack.isEmpty()) {
+            List<Integer> solution = stack.pop();
+
+            if (isSolution(solution)) { // Si encontramos una solución válida, la imprimimos
+                processSolution(solution);
+                continue;
+            }
+
+            for (int candidate : getNewCandidates(solution, candidates)) { // Generamos nuevos candidatos
+                if (isValid(candidate, solution)) {
+                    List<Integer> newSolution = new ArrayList<>(solution);
+                    newSolution.add(candidate);
+                    stack.push(newSolution); // Guardamos la nueva solución en la pila
+                }
+            }
+        }
+    }
+
+    private static boolean isSolution(List<Integer> solution) {
+        return solution.size() == 3; // Ejemplo: buscamos una solución de tamaño 3
+    }
+
+    private static void processSolution(List<Integer> solution) {
+        System.out.println(solution);
+    }
+
+    private static boolean isValid(int candidate, List<Integer> solution) {
+        return !solution.contains(candidate); // Evita duplicados
+    }
+
+    private static List<Integer> getNewCandidates(List<Integer> solution, List<Integer> candidates) {
+        List<Integer> newCandidates = new ArrayList<>();
+        for (int candidate : candidates) {
+            if (!solution.contains(candidate)) {
+                newCandidates.add(candidate);
+            }
+        }
+        return newCandidates;
+    }
+
+    public static void main(String[] args) {
+        List<Integer> candidates = List.of(1, 2, 3, 4, 5); // Candidatos iniciales
+        backtrackIterative(candidates);
+    }
+}
